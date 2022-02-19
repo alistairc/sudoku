@@ -25,7 +25,9 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Sudoku.Grid
+      Sudoku.Parsing
+      Sudoku.Rendering
   other-modules:
       Paths_sudoku
   hs-source-dirs:

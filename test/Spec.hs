@@ -1,5 +1,8 @@
 import Test.Hspec
-import Lib
+
+import Sudoku.Grid
+import Sudoku.Rendering
+import Sudoku.Parsing
 import Data.Function ((&))
 
 sampleGrid = Grid [ 
