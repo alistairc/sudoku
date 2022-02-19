@@ -43,7 +43,7 @@ main = hspec $ do
     describe "making a move" $
         describe "valid moves" $ do
             it "allows valid moves" $
-                (emptyGrid & moveAt (1, 1) D1 & renderGrid) `shouldBe`
+                (emptyGrid & moveAt (C1, R1) D1 & renderGrid) `shouldBe`
                     "1........\n\
                     \.........\n\
                     \.........\n\
@@ -55,7 +55,7 @@ main = hspec $ do
                     \.........\n"
 
             it "allows valid moves x" $
-                (emptyGrid & moveAt (9, 1) D2 & renderGrid) `shouldBe`
+                (emptyGrid & moveAt (C9, R1) D2 & renderGrid) `shouldBe`
                     "........2\n\
                     \.........\n\
                     \.........\n\
@@ -67,7 +67,7 @@ main = hspec $ do
                     \.........\n"
 
             it "allows valid moves y" $
-                (emptyGrid & moveAt (1, 9) D3 & renderGrid) `shouldBe`
+                (emptyGrid & moveAt (C1, R9) D3 & renderGrid) `shouldBe`
                     ".........\n\
                     \.........\n\
                     \.........\n\
@@ -79,7 +79,7 @@ main = hspec $ do
                     \3........\n"
 
             it "moves compose" $
-                let newGrid = emptyGrid & moveAt (1,1) D1 & moveAt (2,2) D2
+                let newGrid = emptyGrid & moveAt (C1,R1) D1 & moveAt (C2,R2) D2
                 in
                     renderGrid newGrid `shouldBe`
                         "1........\n\
