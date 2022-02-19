@@ -53,6 +53,9 @@ test-suite sudoku-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      GridSpec
+      ParsingSpec
+      RenderingSpec
       Paths_sudoku
   hs-source-dirs:
       test
