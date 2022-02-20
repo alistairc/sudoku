@@ -14,10 +14,16 @@ data Column = C1 | C2 | C3 | C4 | C5 | C6 | C7 | C8 | C9
 data Row = R1 | R2 | R3 | R4 | R5 | R6 | R7 | R8 | R9
   deriving (Show, Eq, Ord)
 
+newtype DigitSet = DigitSet [Maybe Digit]
+  deriving (Show, Eq)
+
 type GridCoord = (Column, Row)
 
 emptyGrid :: Grid
 emptyGrid = Grid (replicate 81 Nothing)
+
+emptyDigitSet :: DigitSet
+emptyDigitSet = DigitSet (replicate 9 Nothing)
 
 moveAt :: GridCoord -> Digit -> Grid -> Grid
 moveAt (x, y) digit initial =
@@ -48,3 +54,14 @@ rowIndex row = case row of
   R7 -> 7
   R8 -> 8
   R9 -> 9
+
+selectRow :: Row -> Grid -> DigitSet
+selectRow row (Grid digits) =
+   DigitSet $ selectRange startIndex endIndex digits
+    where
+      startIndex = (rowNum - 1) * 9
+      endIndex = (rowNum * 9) - 1
+      rowNum = rowIndex row
+      selectRange minIndex maxIndex list = list & indexList & filter (between minIndex maxIndex . snd) & map fst
+      indexList list = zip list ([0..]::[Int])
+      between min max x = (x>=min)&&(x<=max)
