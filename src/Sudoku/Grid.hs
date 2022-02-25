@@ -1,4 +1,20 @@
-module Sudoku.Grid where
+module Sudoku.Grid
+  ( Grid (..),
+    Digit (..),
+    Column (..),
+    Row (..),
+    GridCoord,
+    DigitSet (..),
+
+    getSquare,
+    emptyGrid,
+    emptyDigitSet,
+    gridToList,
+    listToGrid,
+    moveAt,
+    selectRow
+  )
+where
 
 import Data.Function ((&))
 
@@ -25,11 +41,26 @@ emptyGrid = Grid (replicate 81 Nothing)
 emptyDigitSet :: DigitSet
 emptyDigitSet = DigitSet (replicate 9 Nothing)
 
+listToGrid :: [Maybe Digit] -> Maybe Grid
+listToGrid list = 
+  if length list == 81 
+  then Just (Grid list) 
+  else Nothing
+
+gridToList :: Grid -> [Maybe Digit]
+gridToList (Grid squares) = squares
+
 moveAt :: GridCoord -> Digit -> Grid -> Grid
 moveAt (x, y) digit initial =
   let (Grid squares) = initial
-      index = (rowIndex y - 1) * 9 + (columIndex x - 1)
+      index = gridIndex (x,y) 
    in Grid $ take index squares ++ [Just digit] ++ drop (index + 1) squares
+
+getSquare :: GridCoord -> Grid -> Maybe Digit
+getSquare (x,y) grid = gridToList grid !! gridIndex (x,y)
+
+gridIndex :: GridCoord -> Int
+gridIndex (x,y) = (rowIndex y - 1) * 9 + (columIndex x - 1)
 
 columIndex :: Column -> Int
 columIndex col = case col of
@@ -57,11 +88,11 @@ rowIndex row = case row of
 
 selectRow :: Row -> Grid -> DigitSet
 selectRow row (Grid digits) =
-   DigitSet $ selectRange startIndex endIndex digits
-    where
-      startIndex = (rowNum - 1) * 9
-      endIndex = (rowNum * 9) - 1
-      rowNum = rowIndex row
-      selectRange minIndex maxIndex list = list & indexList & filter (between minIndex maxIndex . snd) & map fst
-      indexList list = zip list ([0..]::[Int])
-      between min max x = (x>=min)&&(x<=max)
+  DigitSet $ selectRange startIndex endIndex digits
+  where
+    startIndex = (rowNum - 1) * 9
+    endIndex = (rowNum * 9) - 1
+    rowNum = rowIndex row
+    selectRange minIndex maxIndex list = list & indexList & filter (between minIndex maxIndex . snd) & map fst
+    indexList list = zip list ([0 ..] :: [Int])
+    between min max x = (x >= min) && (x <= max)
