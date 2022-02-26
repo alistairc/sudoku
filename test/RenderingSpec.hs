@@ -21,11 +21,11 @@ requireData :: (Show a, Eq a) => Maybe a -> (a -> Spec) -> Spec
 requireData maybeData specs = 
     maybe (it "has required test data" (maybeData `shouldNotBe` Nothing)) specs maybeData
 
-spec :: Spec
-spec = requireData sampleGrid specsWithGrid
+withSampleGrid :: (Grid -> Spec) -> Spec
+withSampleGrid = requireData sampleGrid
 
-specsWithGrid :: Grid -> Spec
-specsWithGrid grid = do
+spec :: Spec
+spec = withSampleGrid (\grid -> do
     it "empty grid is dots" $
         renderGrid emptyGrid `shouldBe`
             ".........\n\
@@ -48,3 +48,4 @@ specsWithGrid grid = do
             \789123456\n\
             \891234567\n\
             \912345678\n"    
+    )
