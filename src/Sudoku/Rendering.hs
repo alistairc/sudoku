@@ -21,8 +21,9 @@ renderSquare (Just d) = case d of
   D9 -> '9'
 
 renderGrid :: Grid -> String
-renderGrid (Grid squares) =
-  concatMap (\line -> renderLine line ++ ['\n']) (chunksOf 9 squares)
+renderGrid grid =
+  let squares = gridToList grid in
+    concatMap (\line -> renderLine line ++ ['\n']) (chunksOf 9 squares)
 
 renderLine :: [Maybe Digit] -> String
 renderLine = map renderSquare
