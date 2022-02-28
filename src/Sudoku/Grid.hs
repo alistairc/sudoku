@@ -1,5 +1,5 @@
 module Sudoku.Grid
-  ( Grid (..),
+  ( Grid,
     Digit (..),
     Column (..),
     Row (..),

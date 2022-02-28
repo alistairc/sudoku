@@ -4,28 +4,10 @@ import Test.Hspec
 import Sudoku.Grid
 import Sudoku.Rendering
 import Data.Function ((&))
-
-sampleGrid = listToGrid [ 
-        Just D1,Just D2,Just D3,Just D4,Just D5,Just D6,Just D7,Just D8,Just D9,
-        Just D2,Just D3,Just D4,Just D5,Just D6,Just D7,Just D8,Just D9,Just D1,
-        Just D3,Just D4,Just D5,Just D6,Just D7,Just D8,Just D9,Just D1,Just D2,
-        Just D4,Just D5,Just D6,Just D7,Just D8,Just D9,Just D1,Just D2,Just D3,
-        Just D5,Just D6,Just D7,Just D8,Just D9,Just D1,Just D2,Just D3,Just D4,
-        Just D6,Just D7,Just D8,Just D9,Just D1,Just D2,Just D3,Just D4,Just D5,
-        Just D7,Just D8,Just D9,Just D1,Just D2,Just D3,Just D4,Just D5,Just D6,
-        Just D8,Just D9,Just D1,Just D2,Just D3,Just D4,Just D5,Just D6,Just D7,
-        Just D9,Just D1,Just D2,Just D3,Just D4,Just D5,Just D6,Just D7,Just D8
-    ]
-
-requireData :: (Show a, Eq a) => Maybe a -> (a -> Spec) -> Spec
-requireData maybeData specs = 
-    maybe (it "has required test data" (maybeData `shouldNotBe` Nothing)) specs maybeData
-
-withSampleGrid :: (Grid -> Spec) -> Spec
-withSampleGrid = requireData sampleGrid
+import TestData
 
 spec :: Spec
-spec = withSampleGrid (\grid -> do
+spec = withSampleGrid (\sampleGrid -> do
     it "empty grid is dots" $
         renderGrid emptyGrid `shouldBe`
             ".........\n\
@@ -38,7 +20,7 @@ spec = withSampleGrid (\grid -> do
             \.........\n\
             \.........\n"
     it "full grid is numbers" $
-        renderGrid grid `shouldBe`
+        renderGrid sampleGrid `shouldBe`
             "123456789\n\
             \234567891\n\
             \345678912\n\
