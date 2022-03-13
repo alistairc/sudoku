@@ -7,7 +7,7 @@ import Data.Function ((&))
 import TestData
 
 spec :: Spec
-spec = withSampleGrid (\sampleGrid -> do
+spec = do
     it "empty grid is dots" $
         renderGrid emptyGrid `shouldBe`
             ".........\n\
@@ -30,4 +30,4 @@ spec = withSampleGrid (\sampleGrid -> do
             \789123456\n\
             \891234567\n\
             \912345678\n"    
-    )
+    

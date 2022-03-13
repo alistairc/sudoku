@@ -11,7 +11,6 @@ module Sudoku.Grid
     emptyDigitSet,
     gridToList,
     listToGrid,
-    listToMaybeGrid,
     moveAt,
     selectRow
   )
@@ -41,12 +40,6 @@ emptyGrid = Grid (replicate 81 Nothing)
 
 emptyDigitSet :: DigitSet
 emptyDigitSet = DigitSet (replicate 9 Nothing)
-
-listToMaybeGrid :: [Maybe Digit] -> Maybe Grid
-listToMaybeGrid list =
-  if length list == 81
-  then Just (Grid list)
-  else Nothing
 
 listToGrid :: [Maybe Digit] -> Grid
 listToGrid list = Grid $ take 81 (list ++ replicate 81 Nothing)
