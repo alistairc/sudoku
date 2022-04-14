@@ -6,12 +6,13 @@ module Sudoku.Grid
     GridCoord,
     DigitSet (..),
 
-    getSquare,
     emptyGrid,
-    emptyDigitSet,
+    getSquare,
+    moveAt,
     gridToList,
     listToGrid,
-    moveAt,
+    emptyDigitSet,
+    digitSetFromList,
     selectRow
   )
 where
@@ -38,9 +39,6 @@ type GridCoord = (Column, Row)
 emptyGrid :: Grid
 emptyGrid = Grid (replicate 81 Nothing)
 
-emptyDigitSet :: DigitSet
-emptyDigitSet = DigitSet (replicate 9 Nothing)
-
 listToGrid :: [Maybe Digit] -> Grid
 listToGrid list = Grid $ take 81 (list ++ replicate 81 Nothing)
 
@@ -64,6 +62,15 @@ columnIndex col = fromEnum col + 1
 
 rowIndex :: Row -> Int
 rowIndex row = fromEnum row + 1
+
+emptyDigitSet :: DigitSet
+emptyDigitSet = DigitSet (replicate 9 Nothing)
+
+digitSetFromList :: [Maybe Digit] -> DigitSet
+digitSetFromList _ = emptyDigitSet
+
+digitSetToList :: DigitSet -> [Maybe Digit]
+digitSetToList _ = replicate 9 Nothing
 
 selectRow :: Row -> Grid -> DigitSet
 selectRow row (Grid digits) =

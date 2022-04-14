@@ -90,6 +90,14 @@ spec = do
                        \.........\n\
                        \.........\n"
 
+
+  describe "digitSets" $ 
+    context "digitSetFromList" $ do
+      it "emptyList -> 9 Nothings" $
+        digitSetFromList [] `shouldBe` emptyDigitSet 
+      it "partial list -> 9 digits" $
+        digitSetFromList [Just D1, Just D2, Just D3] `shouldBe` digitSetFromList [Just D1, Just D2, Just D3, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing]
+
   describe "selecting a row" $
     it "selects the digits" $ do
       selectRow R1 sampleGrid `shouldBe` DigitSet [Just D1, Just D2, Just D3, Just D4, Just D5, Just D6, Just D7, Just D8, Just D9]
