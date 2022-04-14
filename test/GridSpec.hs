@@ -96,7 +96,7 @@ spec = do
       it "emptyList -> 9 Nothings" $
         digitSetFromList [] `shouldBe` emptyDigitSet 
       it "partial list -> 9 digits" $
-        digitSetFromList [Just D1, Just D2, Just D3] `shouldBe` digitSetFromList [Just D1, Just D2, Just D3, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing]
+        digitSetFromList [Just D1, Just D2, Just D3] `shouldBe` DigitSet [Just D1, Just D2, Just D3, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing]
 
   describe "selecting a row" $
     it "selects the digits" $ do

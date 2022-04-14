@@ -67,7 +67,7 @@ emptyDigitSet :: DigitSet
 emptyDigitSet = DigitSet (replicate 9 Nothing)
 
 digitSetFromList :: [Maybe Digit] -> DigitSet
-digitSetFromList _ = emptyDigitSet
+digitSetFromList list = DigitSet $ take 9 $ list ++ repeat Nothing
 
 digitSetToList :: DigitSet -> [Maybe Digit]
 digitSetToList _ = replicate 9 Nothing
