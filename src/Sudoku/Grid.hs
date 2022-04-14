@@ -13,6 +13,7 @@ module Sudoku.Grid
     listToGrid,
     emptyDigitSet,
     digitSetFromList,
+    digitSetToList,
     selectRow
   )
 where
@@ -70,7 +71,7 @@ digitSetFromList :: [Maybe Digit] -> DigitSet
 digitSetFromList list = DigitSet $ take 9 $ list ++ repeat Nothing
 
 digitSetToList :: DigitSet -> [Maybe Digit]
-digitSetToList _ = replicate 9 Nothing
+digitSetToList (DigitSet list) = list
 
 selectRow :: Row -> Grid -> DigitSet
 selectRow row (Grid digits) =
