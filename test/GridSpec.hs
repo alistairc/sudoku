@@ -96,15 +96,14 @@ spec = do
       it "emptyList -> 9 Nothings" $
         digitSetFromList [] `shouldBe` emptyDigitSet 
       it "partial list -> 9 digits" $
-        digitSetFromList [Just D1, Just D2, Just D3] `shouldBe` DigitSet [Just D1, Just D2, Just D3, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing]
+        digitSetFromList [Just D1, Just D2, Just D3] `shouldBe` DigitSet (Just D1) (Just D2) (Just D3) Nothing Nothing Nothing Nothing Nothing Nothing
     context "digitSetToList" $
       it "returns the digits" $
-        let
-          originalList = [Just D1, Just D2, Just D3, Just D4, Just D5, Just D6, Just D7, Just D8, Just D9]
-        in
-          digitSetToList (DigitSet originalList) `shouldBe` originalList
+        digitSetToList (DigitSet (Just D1) (Just D2) (Just D3) (Just D4) (Just D5) (Just D6) (Just D7) (Just D8) (Just D9)) 
+        `shouldBe` 
+          [Just D1, Just D2, Just D3, Just D4, Just D5, Just D6, Just D7, Just D8, Just D9]
 
   describe "selecting a row" $
     it "selects the digits" $ do
-      selectRow R1 sampleGrid `shouldBe` DigitSet [Just D1, Just D2, Just D3, Just D4, Just D5, Just D6, Just D7, Just D8, Just D9]
-      selectRow R9 sampleGrid `shouldBe` DigitSet [Just D9, Just D1, Just D2, Just D3, Just D4, Just D5, Just D6, Just D7, Just D8]
+      selectRow R1 sampleGrid `shouldBe` DigitSet (Just D1) (Just D2) (Just D3) (Just D4) (Just D5) (Just D6) (Just D7) (Just D8) (Just D9)
+      selectRow R9 sampleGrid `shouldBe` DigitSet (Just D9) (Just D1) (Just D2) (Just D3) (Just D4) (Just D5) (Just D6) (Just D7) (Just D8)
