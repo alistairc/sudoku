@@ -4,16 +4,16 @@ module Sudoku.Grid
     Column (..),
     Row (..),
     GridCoord,
-    DigitSet (..),
+    Group (..),
 
     emptyGrid,
     getCell,
     moveAt,
     gridToList,
     listToGrid,
-    emptyDigitSet,
-    digitSetFromList,
-    digitSetToList,
+    emptyGroup,
+    groupFromList,
+    groupToList,
     selectRow
   )
 where
@@ -32,7 +32,7 @@ data Column = C1 | C2 | C3 | C4 | C5 | C6 | C7 | C8 | C9
 data Row = R1 | R2 | R3 | R4 | R5 | R6 | R7 | R8 | R9
   deriving (Show, Eq, Ord, Enum)
 
-data DigitSet = DigitSet
+data Group = Group
     (Maybe Digit) (Maybe Digit) (Maybe Digit)
     (Maybe Digit) (Maybe Digit) (Maybe Digit)
     (Maybe Digit) (Maybe Digit) (Maybe Digit)
@@ -67,32 +67,32 @@ columnIndex col = fromEnum col + 1
 rowIndex :: Row -> Int
 rowIndex row = fromEnum row + 1
 
-emptyDigitSet :: DigitSet
-emptyDigitSet = DigitSet 
+emptyGroup :: Group
+emptyGroup = Group 
   Nothing Nothing Nothing
   Nothing Nothing Nothing
   Nothing Nothing Nothing
 
-digitSetFromList :: [Maybe Digit] -> DigitSet
-digitSetFromList [] = emptyDigitSet
-digitSetFromList [d1] = DigitSet d1 Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing
-digitSetFromList [d1,d2] = DigitSet d1 d2 Nothing Nothing Nothing Nothing Nothing Nothing Nothing
-digitSetFromList [d1,d2,d3] = DigitSet d1 d2 d3 Nothing Nothing Nothing Nothing Nothing Nothing
-digitSetFromList [d1,d2,d3,d4] = DigitSet d1 d2 d3 d4 Nothing Nothing Nothing Nothing Nothing
-digitSetFromList [d1,d2,d3,d4,d5] = DigitSet d1 d2 d3 d4 d5 Nothing Nothing Nothing Nothing
-digitSetFromList [d1,d2,d3,d4,d5,d6] = DigitSet d1 d2 d3 d4 d5 d6 Nothing Nothing Nothing
-digitSetFromList [d1,d2,d3,d4,d5,d6,d7] = DigitSet d1 d2 d3 d4 d5 d6 d7 Nothing Nothing
-digitSetFromList [d1,d2,d3,d4,d5,d6,d7,d8] = DigitSet d1 d2 d3 d4 d5 d6 d7 d8 Nothing
-digitSetFromList [d1,d2,d3,d4,d5,d6,d7,d8,d9] = DigitSet d1 d2 d3 d4 d5 d6 d7 d8 d9
-digitSetFromList (d1:d2:d3:d4:d5:d6:d7:d8:d9:_) = DigitSet d1 d2 d3 d4 d5 d6 d7 d8 d9
+groupFromList :: [Maybe Digit] -> Group
+groupFromList [] = emptyGroup
+groupFromList [d1] = Group d1 Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing
+groupFromList [d1,d2] = Group d1 d2 Nothing Nothing Nothing Nothing Nothing Nothing Nothing
+groupFromList [d1,d2,d3] = Group d1 d2 d3 Nothing Nothing Nothing Nothing Nothing Nothing
+groupFromList [d1,d2,d3,d4] = Group d1 d2 d3 d4 Nothing Nothing Nothing Nothing Nothing
+groupFromList [d1,d2,d3,d4,d5] = Group d1 d2 d3 d4 d5 Nothing Nothing Nothing Nothing
+groupFromList [d1,d2,d3,d4,d5,d6] = Group d1 d2 d3 d4 d5 d6 Nothing Nothing Nothing
+groupFromList [d1,d2,d3,d4,d5,d6,d7] = Group d1 d2 d3 d4 d5 d6 d7 Nothing Nothing
+groupFromList [d1,d2,d3,d4,d5,d6,d7,d8] = Group d1 d2 d3 d4 d5 d6 d7 d8 Nothing
+groupFromList [d1,d2,d3,d4,d5,d6,d7,d8,d9] = Group d1 d2 d3 d4 d5 d6 d7 d8 d9
+groupFromList (d1:d2:d3:d4:d5:d6:d7:d8:d9:_) = Group d1 d2 d3 d4 d5 d6 d7 d8 d9
 
-digitSetToList :: DigitSet -> [Maybe Digit]
-digitSetToList (DigitSet d1 d2 d3 d4 d5 d6 d7 d8 d9) =
+groupToList :: Group -> [Maybe Digit]
+groupToList (Group d1 d2 d3 d4 d5 d6 d7 d8 d9) =
    [d1,d2,d3,d4,d5,d6,d7,d8,d9]
 
-selectRow :: Row -> Grid -> DigitSet
+selectRow :: Row -> Grid -> Group
 selectRow row (Grid digits) =
-  digitSetFromList $ selectRange startIndex endIndex digits
+  groupFromList $ selectRange startIndex endIndex digits
   where
     startIndex = (rowNum - 1) * 9
     endIndex = (rowNum * 9) - 1
