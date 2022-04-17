@@ -23,22 +23,22 @@ spec = do
       it "empty list -> emptyGrid" $
         listToGrid [] `shouldBe` emptyGrid
 
-      it "listToGrid, Not enough squares, sets first squares" $
-        let squares = [Just D1, Just D2, Just D3]
-            grid = listToGrid squares
+      it "listToGrid, Not enough cells, sets first cells" $
+        let cells = [Just D1, Just D2, Just D3]
+            grid = listToGrid cells
          in do
-              getSquare (C1, R1) grid `shouldBe` Just D1
-              getSquare (C2, R1) grid `shouldBe` Just D2
-              getSquare (C3, R1) grid `shouldBe` Just D3
-              getSquare (C4, R1) grid `shouldBe` Nothing
-              getSquare (C1, R2) grid `shouldBe` Nothing
-              getSquare (C9, R9) grid `shouldBe` Nothing
+              getCell (C1, R1) grid `shouldBe` Just D1
+              getCell (C2, R1) grid `shouldBe` Just D2
+              getCell (C3, R1) grid `shouldBe` Just D3
+              getCell (C4, R1) grid `shouldBe` Nothing
+              getCell (C1, R2) grid `shouldBe` Nothing
+              getCell (C9, R9) grid `shouldBe` Nothing
 
-  describe "select single square" $
-    it "getSquare" $ do
-      getSquare (C1, R1) sampleGrid `shouldBe` Just D1
-      getSquare (C2, R2) sampleGrid `shouldBe` Just D3
-      getSquare (C1, R1) emptyGrid `shouldBe` Nothing
+  describe "select single cell" $
+    it "getCell" $ do
+      getCell (C1, R1) sampleGrid `shouldBe` Just D1
+      getCell (C2, R2) sampleGrid `shouldBe` Just D3
+      getCell (C1, R1) emptyGrid `shouldBe` Nothing
 
   describe "making a move" $ do
     it "allows valid moves" $

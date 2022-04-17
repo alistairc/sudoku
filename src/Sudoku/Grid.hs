@@ -7,7 +7,7 @@ module Sudoku.Grid
     DigitSet (..),
 
     emptyGrid,
-    getSquare,
+    getCell,
     moveAt,
     gridToList,
     listToGrid,
@@ -47,16 +47,16 @@ listToGrid :: [Maybe Digit] -> Grid
 listToGrid list = Grid $ take 81 (list ++ replicate 81 Nothing)
 
 gridToList :: Grid -> [Maybe Digit]
-gridToList (Grid squares) = squares
+gridToList (Grid cells) = cells
 
 moveAt :: GridCoord -> Digit -> Grid -> Grid
 moveAt (x, y) digit initial =
-  let (Grid squares) = initial
+  let (Grid cells) = initial
       index = gridIndex (x,y)
-   in Grid $ take index squares ++ [Just digit] ++ drop (index + 1) squares
+   in Grid $ take index cells ++ [Just digit] ++ drop (index + 1) cells
 
-getSquare :: GridCoord -> Grid -> Maybe Digit
-getSquare (x,y) grid = gridToList grid !! gridIndex (x,y)
+getCell :: GridCoord -> Grid -> Maybe Digit
+getCell (x,y) grid = gridToList grid !! gridIndex (x,y)
 
 gridIndex :: GridCoord -> Int
 gridIndex (x,y) = (rowIndex y - 1) * 9 + (columnIndex x - 1)
