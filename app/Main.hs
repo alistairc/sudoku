@@ -1,4 +1,6 @@
 module Main where
+    
+import ConsoleUi.ConsoleApp (runSudoku)
 
 main :: IO ()
-main = putStrLn "Hello world"
+main = runSudoku
