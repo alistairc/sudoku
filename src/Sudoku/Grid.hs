@@ -14,23 +14,26 @@ module Sudoku.Grid
     emptyGroup,
     groupFromList,
     groupToList,
+    missingFromGroup,
     selectRow
   )
 where
 
 import Data.Function ((&))
+import Data.List (intersect)
+import Data.Maybe (catMaybes)
 
 data Digit = D1 | D2 | D3 | D4 | D5 | D6 | D7 | D8 | D9
-  deriving (Show, Eq)
+  deriving (Show, Eq, Enum, Bounded)
 
 newtype Grid = Grid [Maybe Digit]
   deriving (Show, Eq)
 
 data Column = C1 | C2 | C3 | C4 | C5 | C6 | C7 | C8 | C9
-  deriving (Show, Eq, Ord, Enum)
+  deriving (Show, Eq, Ord, Enum, Bounded)
 
 data Row = R1 | R2 | R3 | R4 | R5 | R6 | R7 | R8 | R9
-  deriving (Show, Eq, Ord, Enum)
+  deriving (Show, Eq, Ord, Enum, Bounded)
 
 data Group = Group
     (Maybe Digit) (Maybe Digit) (Maybe Digit)
@@ -68,7 +71,7 @@ rowIndex :: Row -> Int
 rowIndex row = fromEnum row + 1
 
 emptyGroup :: Group
-emptyGroup = Group 
+emptyGroup = Group
   Nothing Nothing Nothing
   Nothing Nothing Nothing
   Nothing Nothing Nothing
@@ -89,6 +92,14 @@ groupFromList (d1:d2:d3:d4:d5:d6:d7:d8:d9:_) = Group d1 d2 d3 d4 d5 d6 d7 d8 d9
 groupToList :: Group -> [Maybe Digit]
 groupToList (Group d1 d2 d3 d4 d5 d6 d7 d8 d9) =
    [d1,d2,d3,d4,d5,d6,d7,d8,d9]
+
+missingFromGroup :: Group -> [Digit]
+missingFromGroup grp =
+  allDigits & filter notFound
+  where
+    notFound x  = x `notElem` foundDigits
+    foundDigits = groupToList grp & catMaybes
+    allDigits = enumFrom (minBound :: Digit)
 
 selectRow :: Row -> Grid -> Group
 selectRow row (Grid digits) =

@@ -90,18 +90,26 @@ spec = do
                        \.........\n\
                        \.........\n"
 
-
   describe "groups" $ do
+    let exampleFullGroup = Group (Just D1) (Just D2) (Just D3) (Just D4) (Just D5) (Just D6) (Just D7) (Just D8) (Just D9)
+
     context "groupFromList" $ do
-      it "emptyList -> 9 Nothings" $
-        groupFromList [] `shouldBe` emptyGroup 
+      it "empty List -> empty group" $
+        groupFromList [] `shouldBe` emptyGroup
       it "partial list -> 9 digits" $
         groupFromList [Just D1, Just D2, Just D3] `shouldBe` Group (Just D1) (Just D2) (Just D3) Nothing Nothing Nothing Nothing Nothing Nothing
     context "groupToList" $
       it "returns the digits" $
-        groupToList (Group (Just D1) (Just D2) (Just D3) (Just D4) (Just D5) (Just D6) (Just D7) (Just D8) (Just D9)) 
-        `shouldBe` 
-          [Just D1, Just D2, Just D3, Just D4, Just D5, Just D6, Just D7, Just D8, Just D9]
+        groupToList exampleFullGroup
+          `shouldBe` [Just D1, Just D2, Just D3, Just D4, Just D5, Just D6, Just D7, Just D8, Just D9]
+    context "missingFromGroup" $ do
+      it "full set -> none missing" $
+        missingFromGroup exampleFullGroup `shouldBe` []
+      it "empty -> all misssing" $
+        missingFromGroup emptyGroup `shouldBe` enumFrom (minBound :: Digit)
+      it "some digits -> finds missing" $
+        let group = groupFromList [Just D9, Just D1, Just D3]
+         in missingFromGroup group `shouldBe` [D2, D4, D5, D6, D7, D8]
 
   describe "selecting a row" $
     it "selects the digits" $ do
