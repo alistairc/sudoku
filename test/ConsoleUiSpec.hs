@@ -1,6 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-
 module ConsoleUiSpec where
 
 import ConsoleUi.ConsoleApp
