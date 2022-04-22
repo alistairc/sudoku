@@ -111,7 +111,37 @@ spec = do
         let group = groupFromList [Just D9, Just D1, Just D3]
          in missingFromGroup group `shouldBe` [D2, D4, D5, D6, D7, D8]
 
-  describe "selecting a row" $
-    it "selects the digits" $ do
-      selectRow R1 sampleGrid `shouldBe` Group (Just D1) (Just D2) (Just D3) (Just D4) (Just D5) (Just D6) (Just D7) (Just D8) (Just D9)
-      selectRow R9 sampleGrid `shouldBe` Group (Just D9) (Just D1) (Just D2) (Just D3) (Just D4) (Just D5) (Just D6) (Just D7) (Just D8)
+  describe "selecting groups" $ do
+    context "selecting a column" $ 
+      it "selects the digits" $ 
+        let grid = listToGrid [
+                Just D1,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Just D9,
+                Just D2,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Just D1,
+                Just D3,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Just D2,
+                Just D4,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Just D3,
+                Just D5,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Just D4,
+                Just D6,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Just D5,
+                Just D7,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Just D6,
+                Just D8,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Just D7,
+                Just D9,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Just D8
+              ] 
+          in do
+            selectColumn C1 grid `shouldBe` Group (Just D1) (Just D2) (Just D3) (Just D4) (Just D5) (Just D6) (Just D7) (Just D8) (Just D9)
+            selectColumn C9 grid `shouldBe` Group (Just D9) (Just D1) (Just D2) (Just D3) (Just D4) (Just D5) (Just D6) (Just D7) (Just D8)
+
+    context "selecting a row" $
+      it "selects the digits" $
+        let grid = listToGrid [
+                Just D1,Just D2,Just D3,Just D4,Just D5,Just D6,Just D7,Just D8,Just D9,
+                Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,
+                Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,
+                Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,
+                Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,
+                Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,
+                Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,
+                Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,
+                Just D9,Just D1,Just D2,Just D3,Just D4,Just D5,Just D6,Just D7,Just D8
+              ] 
+          in do
+            selectRow R1 grid `shouldBe` Group (Just D1) (Just D2) (Just D3) (Just D4) (Just D5) (Just D6) (Just D7) (Just D8) (Just D9)
+            selectRow R9 grid `shouldBe` Group (Just D9) (Just D1) (Just D2) (Just D3) (Just D4) (Just D5) (Just D6) (Just D7) (Just D8)

@@ -15,7 +15,8 @@ module Sudoku.Grid
     groupFromList,
     groupToList,
     missingFromGroup,
-    selectRow
+    selectRow,
+    selectColumn
   )
 where
 
@@ -111,3 +112,12 @@ selectRow row (Grid digits) =
     selectRange minIndex maxIndex list = list & indexList & filter (between minIndex maxIndex . snd) & map fst
     indexList list = zip list ([0 ..] :: [Int])
     between min max x = (x >= min) && (x <= max)
+
+selectColumn :: Column -> Grid -> Group
+selectColumn col (Grid digits) =
+  groupFromList (digits & indexList & filter inColumn & map fst)
+  where
+    indexList list = zip list ([0 ..] :: [Int])
+    inColumn (_, idx) = 
+      (idx - (columnIndex col - 1)) `mod` 9 == 0
+
