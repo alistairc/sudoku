@@ -19,13 +19,13 @@ spec = do
             list !! 10 `shouldBe` Just D3
             list !! 80 `shouldBe` Just D8
 
-    context "listToGrid" $ do
+    context "gridFromList" $ do
       it "empty list -> emptyGrid" $
-        listToGrid [] `shouldBe` emptyGrid
+        gridFromList [] `shouldBe` emptyGrid
 
-      it "listToGrid, Not enough cells, sets first cells" $
+      it "gridFromList, Not enough cells, sets first cells" $
         let cells = [Just D1, Just D2, Just D3]
-            grid = listToGrid cells
+            grid = gridFromList cells
          in do
               getCell (C1, R1) grid `shouldBe` Just D1
               getCell (C2, R1) grid `shouldBe` Just D2
@@ -114,7 +114,7 @@ spec = do
   describe "selecting groups" $ do
     context "selecting a column" $ 
       it "selects the digits" $ 
-        let grid = listToGrid [
+        let grid = gridFromList [
                 Just D1,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Just D9,
                 Just D2,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Just D1,
                 Just D3,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Just D2,
@@ -131,7 +131,7 @@ spec = do
 
     context "selecting a row" $
       it "selects the digits" $
-        let grid = listToGrid [
+        let grid = gridFromList [
                 Just D1,Just D2,Just D3,Just D4,Just D5,Just D6,Just D7,Just D8,Just D9,
                 Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,
                 Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,Nothing,

@@ -10,7 +10,7 @@ module Sudoku.Grid
     getCell,
     moveAt,
     gridToList,
-    listToGrid,
+    gridFromList,
     emptyGroup,
     groupFromList,
     groupToList,
@@ -47,8 +47,8 @@ type GridCoord = (Column, Row)
 emptyGrid :: Grid
 emptyGrid = Grid (replicate 81 Nothing)
 
-listToGrid :: [Maybe Digit] -> Grid
-listToGrid list = Grid $ take 81 (list ++ replicate 81 Nothing)
+gridFromList :: [Maybe Digit] -> Grid
+gridFromList list = Grid $ take 81 (list ++ replicate 81 Nothing)
 
 gridToList :: Grid -> [Maybe Digit]
 gridToList (Grid cells) = cells
