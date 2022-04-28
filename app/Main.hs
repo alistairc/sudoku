@@ -1,6 +1,6 @@
 module Main where
     
-import ConsoleUi.ConsoleApp (runSudoku)
+import ConsoleUi.ConsoleApp (runSudokuMain)
 
 main :: IO ()
-main = runSudoku
+main = runSudokuMain

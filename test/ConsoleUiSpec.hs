@@ -21,27 +21,45 @@ spec = do
           inputLines = ["line one", "line two", "line 3 (ignored)"]
           recordedOutput = runTestConsoleApp inputLines sampleProgram
        in recordedOutput
-            `shouldBe` [ "second line two",
-                         "first line one"
+            `shouldBe` [ "first line one",
+                         "second line two"
                        ]
     it "should use blanks if it runs out of input lines" $
       let inputLines = []
           line = runTestConsoleApp inputLines consoleReadLine
        in line `shouldBe` ""
 
-  describe "on startup" $
-    it "should display an empty grid" $
-      let consoleOutput = runTestConsoleApp [] $ do
-            runSudoku
+  describe "on startup" $ do
+    it "should display an empty grid, then a menu" $
+      let consoleOutput = runTestConsoleApp ["q"] $ do
+            runSudokuMain
             getConsoleLines
-       in lastOutput consoleOutput `shouldBe` renderGrid emptyGrid
+       in consoleOutput
+            `shouldBe` [ renderGrid emptyGrid,
+                         menuOptions
+                       ]
+    it "should loop until quit" $
+      let consoleOutput = runTestConsoleApp ["x","x","q"] $ do
+            runSudokuMain
+            getConsoleLines
+       in
+         length consoleOutput `shouldBe` 6
 
-getConsoleLines :: TestConsoleApp [String]
-getConsoleLines = gets writtenOutput
+    context "menu selections" $ do
+      it "q -> should quit" $
+        let consoleInputLines = ["q"]
+            menuChoice = runTestConsoleApp consoleInputLines prompt
+         in menuChoice `shouldBe` Quit
 
-lastOutput :: [String] -> String
-lastOutput [] = "" -- to avoid the partial
-lastOutput list = head list
+      it "n -> new grid" $
+        let consoleInputLines = ["n"]
+            menuChoice = runTestConsoleApp consoleInputLines prompt
+         in menuChoice `shouldBe` NewGrid
+         
+      it "any other key -> redisplay menu" $
+        let consoleInputLines = ["x"]
+            menuChoice = runTestConsoleApp consoleInputLines prompt
+         in menuChoice `shouldBe` Redisplay
 
 data ConsoleState = ConsoleState
   { writtenOutput :: [String],
@@ -52,6 +70,9 @@ data ConsoleState = ConsoleState
 -- custom monad for side-effect free testing
 newtype TestConsoleApp a = TestConsoleApp (State ConsoleState a)
   deriving (Functor, Applicative, Monad, MonadState ConsoleState)
+
+getConsoleLines :: TestConsoleApp [String]
+getConsoleLines = gets (reverse . writtenOutput)
 
 -- run function for our custom monad.
 runTestConsoleApp :: [String] -> TestConsoleApp a -> a
@@ -73,4 +94,4 @@ instance MonadConsole TestConsoleApp where
     pure current
     where
       split [] = ("", [])
-      split (h:t) = (h,t)
+      split (h : t) = (h, t)
