@@ -1,16 +1,10 @@
 module ConsoleUi.ConsoleApp where
 
+import ConsoleUi.IO
+
 import Sudoku.Grid
 import Sudoku.Rendering
-import System.Console.Haskeline
-import Control.Monad.Trans
-import Data.Maybe
 
-
--- typeclass as interface to abstract console IO
-class Monad m => MonadConsole m where
-  consoleWrite :: String -> m ()
-  consoleReadChar :: m Char
 
 -- called by main itself but not directly in IO, so as to allow testing with an alternative monad
 runSudokuMain :: MonadConsole m => m ()
@@ -27,13 +21,6 @@ prompt = do
 
 process :: Monad m => Choice -> m Bool
 process choice = pure $ choice /= Quit
-
-instance MonadConsole (InputT IO) where
-  consoleWrite = outputStrLn
-
-  consoleReadChar = fromMaybe ' ' <$> getInputChar noprompt
-    where noprompt = ""
-
 
 data Choice = Quit | NewGrid | Redisplay
   deriving (Eq, Show)

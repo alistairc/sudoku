@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       ConsoleUi.ConsoleApp
+      ConsoleUi.IO
       Sudoku.Grid
       Sudoku.Parsing
       Sudoku.Rendering
@@ -149,6 +150,8 @@ test-suite sudoku-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      ConsoleTesting
+      ConsoleTestingSpec
       ConsoleUiSpec
       GridSpec
       ParsingSpec
