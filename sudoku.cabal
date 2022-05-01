@@ -81,6 +81,7 @@ library
       TypeSynonymInstances
   build-depends:
       base >=4.7 && <5
+    , haskeline
     , mtl
     , split
   default-language: Haskell2010
@@ -140,6 +141,7 @@ executable sudoku-exe
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , haskeline
     , sudoku
   default-language: Haskell2010
 

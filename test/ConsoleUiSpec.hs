@@ -11,27 +11,27 @@ spec = do
   describe "the console test monad" $ do
     it "should read input and record output" $
       let sampleProgram = do
-            firstLine <- consoleReadLine
-            consoleWrite $ "first " ++ firstLine
+            firstChar <- consoleReadChar
+            consoleWrite $ "first " ++ [firstChar]
 
-            secondLine <- consoleReadLine
-            consoleWrite $ "second " ++ secondLine
+            secondChar <- consoleReadChar
+            consoleWrite $ "second " ++ [secondChar]
 
             getConsoleLines
-          inputLines = ["line one", "line two", "line 3 (ignored)"]
-          recordedOutput = runTestConsoleApp inputLines sampleProgram
+          inputChars = ['1', '2', '3']  -- last one will be ignored
+          recordedOutput = runTestConsoleApp inputChars sampleProgram
        in recordedOutput
-            `shouldBe` [ "first line one",
-                         "second line two"
+            `shouldBe` [ "first 1",
+                         "second 2"
                        ]
-    it "should use blanks if it runs out of input lines" $
-      let inputLines = []
-          line = runTestConsoleApp inputLines consoleReadLine
-       in line `shouldBe` ""
+    it "should use spaces if it runs out of input chars" $
+      let inputChars = []
+          readChar = runTestConsoleApp inputChars consoleReadChar
+       in readChar `shouldBe` ' '
 
   describe "on startup" $ do
     it "should display an empty grid, then a menu" $
-      let consoleOutput = runTestConsoleApp ["q"] $ do
+      let consoleOutput = runTestConsoleApp ['q'] $ do
             runSudokuMain
             getConsoleLines
        in consoleOutput
@@ -39,7 +39,7 @@ spec = do
                          menuOptions
                        ]
     it "should loop until quit" $
-      let consoleOutput = runTestConsoleApp ["x","x","q"] $ do
+      let consoleOutput = runTestConsoleApp "xxq" $ do
             runSudokuMain
             getConsoleLines
        in
@@ -47,23 +47,23 @@ spec = do
 
     context "menu selections" $ do
       it "q -> should quit" $
-        let consoleInputLines = ["q"]
-            menuChoice = runTestConsoleApp consoleInputLines prompt
+        let keyPresses = ['q']
+            menuChoice = runTestConsoleApp keyPresses prompt
          in menuChoice `shouldBe` Quit
 
       it "n -> new grid" $
-        let consoleInputLines = ["n"]
-            menuChoice = runTestConsoleApp consoleInputLines prompt
+        let keyPresses = ['n']
+            menuChoice = runTestConsoleApp keyPresses prompt
          in menuChoice `shouldBe` NewGrid
          
       it "any other key -> redisplay menu" $
-        let consoleInputLines = ["x"]
-            menuChoice = runTestConsoleApp consoleInputLines prompt
+        let keyPresses = ['x']
+            menuChoice = runTestConsoleApp keyPresses prompt
          in menuChoice `shouldBe` Redisplay
 
 data ConsoleState = ConsoleState
   { writtenOutput :: [String],
-    remainingInput :: [String]
+    keyPresses :: [Char]
   }
   deriving (Eq, Show)
 
@@ -75,11 +75,11 @@ getConsoleLines :: TestConsoleApp [String]
 getConsoleLines = gets (reverse . writtenOutput)
 
 -- run function for our custom monad.
-runTestConsoleApp :: [String] -> TestConsoleApp a -> a
+runTestConsoleApp :: [Char] -> TestConsoleApp a -> a
 runTestConsoleApp consoleInput (TestConsoleApp stdOutState) =
   evalState stdOutState initialState
   where
-    initialState = ConsoleState {writtenOutput = [], remainingInput = consoleInput}
+    initialState = ConsoleState {writtenOutput = [], keyPresses = consoleInput}
 
 instance MonadConsole TestConsoleApp where
   consoleWrite text = modify recordOutput
@@ -87,11 +87,11 @@ instance MonadConsole TestConsoleApp where
       recordOutput :: ConsoleState -> ConsoleState
       recordOutput s = s {writtenOutput = text : writtenOutput s}
 
-  consoleReadLine = do
-    lines <- gets remainingInput
-    let (current, rest) = split lines
-    modify (\s -> s {remainingInput = rest})
+  consoleReadChar = do
+    chars <- gets keyPresses
+    let (current, rest) = split chars
+    modify (\s -> s {keyPresses = rest})
     pure current
     where
-      split [] = ("", [])
+      split [] = (' ', [])
       split (h : t) = (h, t)
