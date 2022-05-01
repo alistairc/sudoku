@@ -18,7 +18,6 @@ runSudokuMain = do
   choice <- prompt
   shouldContinue <- process choice
   if shouldContinue then runSudokuMain else pure ()
-  pure ()
 
 prompt :: MonadConsole m => m Choice
 prompt = do
