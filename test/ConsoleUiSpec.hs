@@ -1,7 +1,6 @@
 module ConsoleUiSpec where
 
 import ConsoleTesting
-import ConsoleUi.IO
 import ConsoleUi.ConsoleApp
 import Sudoku.Grid
 import Sudoku.Rendering

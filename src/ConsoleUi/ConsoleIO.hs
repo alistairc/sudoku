@@ -1,7 +1,6 @@
-module ConsoleUi.IO where
+module ConsoleUi.ConsoleIO where
 
 import System.Console.Haskeline
-import Control.Monad.Trans
 import Data.Maybe
 
 

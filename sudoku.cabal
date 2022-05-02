@@ -26,7 +26,7 @@ source-repository head
 library
   exposed-modules:
       ConsoleUi.ConsoleApp
-      ConsoleUi.IO
+      ConsoleUi.ConsoleIO
       Sudoku.Grid
       Sudoku.Parsing
       Sudoku.Rendering

@@ -1,6 +1,6 @@
 module ConsoleUi.ConsoleApp where
 
-import ConsoleUi.IO
+import ConsoleUi.ConsoleIO
 
 import Sudoku.Grid
 import Sudoku.Rendering

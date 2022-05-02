@@ -1,6 +1,6 @@
 module ConsoleTesting where
 
-import ConsoleUi.IO
+import ConsoleUi.ConsoleIO
 import Control.Monad.State
 
 data ConsoleState = ConsoleState

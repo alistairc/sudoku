@@ -1,6 +1,6 @@
 module ConsoleTestingSpec where
 
-import ConsoleUi.IO
+import ConsoleUi.ConsoleIO
 import ConsoleTesting
 import Test.Hspec
 
