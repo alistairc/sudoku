@@ -40,3 +40,28 @@ spec = do
             menuChoice = runTestConsoleApp keyPresses prompt
          in menuChoice `shouldBe` Redisplay
 
+
+      -- next up, make a move.  will be a complex iteraction.  not sure how best to write the test
+      -- will need to track state of grid too
+      -- maybe check the console interaction against a script?
+      --i.e.
+      -- < m
+      -- > row?
+      -- < 4
+      -- > column?
+      -- < 9
+      -- > digit?
+      -- < 2
+      -- 
+      -- validation makes this quite complex too
+      -- the validation itself is pure though
+      -- menu 'm' should make a move
+      -- making a move:
+      --    should prompt for row
+      --      row, if valid <- prompt for column
+      --      row, if invalid
+
+
+
+
+

@@ -2,6 +2,8 @@ module ConsoleUi.ConsoleIO where
 
 import System.Console.Haskeline
 import Data.Maybe
+import Control.Monad.State
+import Sudoku.Grid
 
 
 -- typeclass as interface to abstract console IO
@@ -14,3 +16,11 @@ instance MonadConsole (InputT IO) where
 
   consoleReadChar = fromMaybe ' ' <$> getInputChar noprompt
     where noprompt = ""
+
+instance MonadConsole (StateT Grid (InputT IO)) where
+  consoleWrite = lift . outputStrLn
+
+  consoleReadChar = lift (fromMaybe ' ' <$> getInputChar noprompt)
+    where noprompt = ""
+
+
