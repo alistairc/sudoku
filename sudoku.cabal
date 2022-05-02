@@ -28,7 +28,6 @@ library
       ConsoleUi.ConsoleApp
       ConsoleUi.ConsoleIO
       Sudoku.Grid
-      Sudoku.Parsing
       Sudoku.Rendering
   other-modules:
       Paths_sudoku
@@ -154,7 +153,6 @@ test-suite sudoku-test
       ConsoleTestingSpec
       ConsoleUiSpec
       GridSpec
-      ParsingSpec
       RenderingSpec
       TestData
       Paths_sudoku
