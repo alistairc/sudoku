@@ -1,7 +1,6 @@
 module ConsoleUi.ConsoleApp where
 
 import ConsoleUi.ConsoleIO
-
 import Sudoku.Grid
 import Sudoku.Rendering
 
@@ -10,31 +9,28 @@ import Sudoku.Rendering
 runSudokuMain :: MonadConsole m => m ()
 runSudokuMain = do
   choice <- prompt
-  shouldContinue <- process choice
+  let shouldContinue = process choice  --TODO : this will need to become unpure at some point
   if shouldContinue then runSudokuMain else pure ()
 
 prompt :: MonadConsole m => m Choice
 prompt = do
     consoleWrite $ renderGrid emptyGrid
     consoleWrite menuOptions
-    readMenuChoice
+    parseMenuChoice <$> consoleReadChar
 
-process :: Monad m => Choice -> m Bool
-process choice = pure $ choice /= Quit
+process :: Choice -> Bool
+process choice = choice /= Quit
 
 data Choice = Quit | NewGrid | Redisplay
   deriving (Eq, Show)
-
 
 menuOptions :: String
 menuOptions = "Choose: \n\
               \n: new grid\n\
               \q: quit"
 
-readMenuChoice :: MonadConsole m => m Choice
-readMenuChoice = do
-  input <- consoleReadChar
-  pure $ case input of
-    'q' -> Quit
-    'n' -> NewGrid
-    _ -> Redisplay
+parseMenuChoice :: Char -> Choice
+parseMenuChoice input
+  | input == 'q' = Quit
+  | input == 'n' = NewGrid
+  | otherwise = Redisplay
