@@ -22,21 +22,29 @@ spec = do
             runSudokuMain
             getConsoleLines
        in
-         length consoleOutput `shouldBe` 6
+         length consoleOutput `shouldSatisfy`  (>2)
 
-    context "menu selections" $ do
+    context "Main Menu" $ do
+      it "should display an empty grid, then a menu" $
+        let consoleOutput = runTestConsoleApp ['q'] $ do
+              run MainMenu
+              getConsoleLines
+        in consoleOutput
+              `shouldBe` [ renderGrid emptyGrid,
+                          menuOptions
+                        ]      
       it "q -> should quit" $
         let keyPresses = ['q']
-            menuChoice = runTestConsoleApp keyPresses prompt
+            menuChoice = runTestConsoleApp keyPresses $ run MainMenu
          in menuChoice `shouldBe` Quit
 
       it "n -> new grid" $
         let keyPresses = ['n']
-            menuChoice = runTestConsoleApp keyPresses prompt
+            menuChoice = runTestConsoleApp keyPresses $ run MainMenu
          in menuChoice `shouldBe` NewGrid
          
       it "any other key -> redisplay menu" $
         let keyPresses = ['x']
-            menuChoice = runTestConsoleApp keyPresses prompt
+            menuChoice = runTestConsoleApp keyPresses $ run MainMenu
          in menuChoice `shouldBe` Redisplay
 

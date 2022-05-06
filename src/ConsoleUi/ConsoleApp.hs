@@ -8,20 +8,26 @@ import Sudoku.Rendering
 -- called by main itself but not directly in IO, so as to allow testing with an alternative monad
 runSudokuMain :: MonadConsole m => m ()
 runSudokuMain = do
-  choice <- prompt
-  let shouldContinue = process choice  --TODO : this will need to become unpure at some point
-  if shouldContinue then runSudokuMain else pure ()
+  go MainMenu
+  where
+    go choice = do
+      next <- run choice
+      if next == Quit then pure () else go next
 
-prompt :: MonadConsole m => m Choice
-prompt = do
+
+run :: MonadConsole m => Choice -> m Choice
+run Quit = pure Quit
+
+run MainMenu = do
     consoleWrite $ renderGrid emptyGrid
     consoleWrite menuOptions
     parseMenuChoice <$> consoleReadChar
 
-process :: Choice -> Bool
-process choice = choice /= Quit
+run NewGrid = pure MainMenu
 
-data Choice = Quit | NewGrid | Redisplay
+run Redisplay = pure MainMenu
+
+data Choice = MainMenu | Quit | NewGrid | Redisplay
   deriving (Eq, Show)
 
 menuOptions :: String
