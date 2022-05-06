@@ -25,9 +25,7 @@ run MainMenu = do
 
 run NewGrid = pure MainMenu
 
-run Redisplay = pure MainMenu
-
-data Choice = MainMenu | Quit | NewGrid | Redisplay
+data Choice = MainMenu | Quit | NewGrid
   deriving (Eq, Show)
 
 menuOptions :: String
@@ -39,4 +37,4 @@ parseMenuChoice :: Char -> Choice
 parseMenuChoice input
   | input == 'q' = Quit
   | input == 'n' = NewGrid
-  | otherwise = Redisplay
+  | otherwise = MainMenu

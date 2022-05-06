@@ -46,5 +46,5 @@ spec = do
       it "any other key -> redisplay menu" $
         let keyPresses = ['x']
             menuChoice = runTestConsoleApp keyPresses $ run MainMenu
-         in menuChoice `shouldBe` Redisplay
+         in menuChoice `shouldBe` MainMenu
 
