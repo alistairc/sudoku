@@ -3,6 +3,9 @@ module ConsoleUi.ConsoleApp where
 import ConsoleUi.ConsoleIO
 import Sudoku.Grid
 import Sudoku.Rendering
+import Text.Read
+import Data.Maybe
+import Data.Function ((&))
 
 
 -- called by main itself but not directly in IO, so as to allow testing with an alternative monad
@@ -25,7 +28,20 @@ run MainMenu = do
 
 run NewGrid = pure MainMenu
 
-data Choice = MainMenu | Quit | NewGrid
+run StartMove = do
+  consoleWrite "Row?"
+  char <- consoleReadChar
+  let row = parseRow char
+  pure $ maybe StartMove PromptColumn row
+
+run _ = pure MainMenu
+
+parseRow :: Char -> Maybe Row
+parseRow char =  numToRow <$> (readMaybe [char] :: Maybe Int)
+  where
+    numToRow i = toEnum (i - 1)
+
+data Choice = MainMenu | Quit | NewGrid | StartMove | PromptColumn Row
   deriving (Eq, Show)
 
 menuOptions :: String
@@ -37,4 +53,5 @@ parseMenuChoice :: Char -> Choice
 parseMenuChoice input
   | input == 'q' = Quit
   | input == 'n' = NewGrid
+  | input == 'm' = StartMove
   | otherwise = MainMenu
