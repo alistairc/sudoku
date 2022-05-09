@@ -28,37 +28,27 @@ run NewGrid = pure MainMenu
 run StartMove = do
   consoleWrite "Row?"
   char <- consoleReadChar
-  let row = parseRow char
+  let row = parseNumeric char
   pure $ maybe StartMove PromptColumn row
 run (PromptColumn row) = do
   consoleWrite "Column?"
   char <- consoleReadChar
-  let col = parseColumn char
+  let col = parseNumeric char
   pure $ maybe (PromptColumn row) (PromptDigit row) col
 run (PromptDigit row col) = do
   consoleWrite "Digit?"
   char <- consoleReadChar
-  let digit = parseDigit char
+  let digit = (parseNumeric char :: Maybe Digit)
   pure $
     maybe
       (PromptDigit row col)
       (const MainMenu)
       digit
 
-parseRow :: Char -> Maybe Row
-parseRow char = numToRow <$> (readMaybe [char] :: Maybe Int)
+parseNumeric :: Enum a => Char -> Maybe a
+parseNumeric char = convert <$> (readMaybe [char] :: Maybe Int)
   where
-    numToRow i = toEnum (i - 1)
-
-parseColumn :: Char -> Maybe Column
-parseColumn char = numToCol <$> (readMaybe [char] :: Maybe Int)
-  where
-    numToCol i = toEnum (i - 1)
-
-parseDigit :: Char -> Maybe Digit
-parseDigit char = numToCol <$> (readMaybe [char] :: Maybe Int)
-  where
-    numToCol i = toEnum (i - 1)
+    convert i = toEnum (i - 1)
 
 menuOptions :: String
 menuOptions =
