@@ -4,9 +4,10 @@ import ConsoleUi.ConsoleIO
 import Sudoku.Grid
 import Sudoku.Rendering
 import Text.Read
-import Data.Maybe
 import Data.Function ((&))
 
+data Choice = MainMenu | Quit | NewGrid | StartMove | PromptColumn Row | PromptDigit Row Column
+  deriving (Eq, Show)
 
 -- called by main itself but not directly in IO, so as to allow testing with an alternative monad
 runSudokuMain :: MonadConsole m => m ()
@@ -34,15 +35,23 @@ run StartMove = do
   let row = parseRow char
   pure $ maybe StartMove PromptColumn row
 
-run _ = pure MainMenu
+run (PromptColumn row) = do
+  consoleWrite "Column?"
+  char <- consoleReadChar
+  let col = parseColumn char
+  pure $ maybe (PromptColumn row) (PromptDigit row) col
+
+run (PromptDigit _ _) = pure MainMenu
 
 parseRow :: Char -> Maybe Row
 parseRow char =  numToRow <$> (readMaybe [char] :: Maybe Int)
   where
     numToRow i = toEnum (i - 1)
 
-data Choice = MainMenu | Quit | NewGrid | StartMove | PromptColumn Row
-  deriving (Eq, Show)
+parseColumn :: Char -> Maybe Column
+parseColumn char =  numToCol <$> (readMaybe [char] :: Maybe Int)
+  where
+    numToCol i = toEnum (i - 1)
 
 menuOptions :: String
 menuOptions = "Choose: \n\

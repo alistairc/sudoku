@@ -5,6 +5,8 @@ import ConsoleUi.ConsoleApp
 import Sudoku.Grid
 import Sudoku.Rendering
 import Test.Hspec
+import Test.Hspec.QuickCheck
+import Control.Monad (forM_)
 
 spec :: Spec
 spec = do
@@ -52,18 +54,36 @@ spec = do
          in menuChoice `shouldBe` MainMenu
 
     context "Making a Move" $ do
-      it "start of move -> prompt for row" $
-        let consoleOutput = runTestConsoleApp ['3'] $ do
-              run StartMove
-              getConsoleLines
-         in consoleOutput `shouldBe` ["Row?"]
-      it "valid row 3" $
-        let nextAction = runTestConsoleApp ['3'] $ run StartMove
-         in nextAction `shouldBe` PromptColumn R3
-      it "valid row 9" $
-        let nextAction = runTestConsoleApp ['9'] $ run StartMove
-         in nextAction `shouldBe` PromptColumn R9
-      it "invalid row -> should retry" $
-        let nextAction = runTestConsoleApp ['x'] $ run StartMove
-         in nextAction `shouldBe` StartMove
+      context "StartMove" $ do
+        it "should prompt for row" $
+          let consoleOutput = runTestConsoleApp ['3'] $ do
+                run StartMove
+                getConsoleLines
+          in consoleOutput `shouldBe` ["Row?"]
+        cases (zip [R1 .. R9] ['1' .. '9']) $ \(row,char) -> do
+          it "valid row" $
+            let nextAction = runTestConsoleApp [char] $ run StartMove
+            in nextAction `shouldBe` PromptColumn row
+        it "invalid row -> should retry" $
+          let nextAction = runTestConsoleApp ['x'] $ run StartMove
+          in nextAction `shouldBe` StartMove
+
+      context "PromptColumn" $ do
+        cases [R1 .. R9] $ \row -> do
+            it "should prompt for column" $
+              let consoleOutput = runTestConsoleApp ['3'] $ do
+                    run $ PromptColumn row
+                    getConsoleLines
+              in consoleOutput `shouldBe` ["Column?"]
+            it "invalid column -> should retry" $
+              let nextAction = runTestConsoleApp ['x'] $ run $ PromptColumn row
+              in nextAction `shouldBe` PromptColumn row
+            cases (zip [C1 .. C9] ['1' .. '9']) $ \(col,char) -> do
+              it "valid column -> should prompt for digit" $
+                let nextAction = runTestConsoleApp [char] $ run $ PromptColumn row
+                in nextAction `shouldBe` PromptDigit row col
+
+cases :: Show a => [a] -> (a -> SpecWith b) -> SpecWith b
+cases caseList specs = forM_ caseList runInContext
+  where runInContext x = context (show x) $ specs x
 
