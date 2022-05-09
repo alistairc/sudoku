@@ -5,7 +5,6 @@ import ConsoleUi.ConsoleApp
 import Sudoku.Grid
 import Sudoku.Rendering
 import Test.Hspec
-import Test.Hspec.QuickCheck
 import Control.Monad (forM_)
 
 spec :: Spec
