@@ -64,6 +64,7 @@ menuOptions :: String
 menuOptions =
   "Choose: \n\
   \n: new grid\n\
+  \m: move\n\
   \q: quit"
 
 parseMenuChoice :: Char -> Choice
