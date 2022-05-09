@@ -2,10 +2,10 @@ module ConsoleUiSpec where
 
 import ConsoleTesting
 import ConsoleUi.ConsoleApp
+import Control.Monad (forM_)
 import Sudoku.Grid
 import Sudoku.Rendering
 import Test.Hspec
-import Control.Monad (forM_)
 
 spec :: Spec
 spec = do
@@ -58,29 +58,29 @@ spec = do
           let consoleOutput = runTestConsoleApp ['3'] $ do
                 run StartMove
                 getConsoleLines
-          in consoleOutput `shouldBe` ["Row?"]
-        cases (zip [R1 .. R9] ['1' .. '9']) $ \(row,char) -> do
+           in consoleOutput `shouldBe` ["Row?"]
+        cases (zip [R1 .. R9] ['1' .. '9']) $ \(row, char) -> do
           it "valid row" $
             let nextAction = runTestConsoleApp [char] $ run StartMove
-            in nextAction `shouldBe` PromptColumn row
+             in nextAction `shouldBe` PromptColumn row
         it "invalid row -> should retry" $
           let nextAction = runTestConsoleApp ['x'] $ run StartMove
-          in nextAction `shouldBe` StartMove
+           in nextAction `shouldBe` StartMove
 
       context "PromptColumn" $ do
         cases [R1 .. R9] $ \row -> do
-            it "should prompt for column" $
-              let consoleOutput = runTestConsoleApp ['3'] $ do
-                    run $ PromptColumn row
-                    getConsoleLines
-              in consoleOutput `shouldBe` ["Column?"]
-            it "invalid column -> should retry" $
-              let nextAction = runTestConsoleApp ['x'] $ run $ PromptColumn row
-              in nextAction `shouldBe` PromptColumn row
-            cases (zip [C1 .. C9] ['1' .. '9']) $ \(col,char) -> do
-              it "valid column -> should prompt for digit" $
-                let nextAction = runTestConsoleApp [char] $ run $ PromptColumn row
-                in nextAction `shouldBe` PromptDigit row col
+          it "should prompt for column" $
+            let consoleOutput = runTestConsoleApp ['3'] $ do
+                  run $ PromptColumn row
+                  getConsoleLines
+             in consoleOutput `shouldBe` ["Column?"]
+          it "invalid column -> should retry" $
+            let nextAction = runTestConsoleApp ['x'] $ run $ PromptColumn row
+             in nextAction `shouldBe` PromptColumn row
+          cases (zip [C1 .. C9] ['1' .. '9']) $ \(col, char) -> do
+            it "valid column -> should prompt for digit" $
+              let nextAction = runTestConsoleApp [char] $ run $ PromptColumn row
+               in nextAction `shouldBe` PromptDigit row col
 
       context "Prompt Digit" $ do
         cases
@@ -92,17 +92,16 @@ spec = do
               let consoleOutput = runTestConsoleApp ['3'] $ do
                     run $ PromptDigit row col
                     getConsoleLines
-              in consoleOutput `shouldBe` ["Digit?"]
+               in consoleOutput `shouldBe` ["Digit?"]
             it "invalid digit -> should retry" $
               let nextAction = runTestConsoleApp ['x'] $ run $ PromptDigit row col
-              in nextAction `shouldBe` PromptDigit row col
-            cases (zip [D1 .. D9] ['1' .. '9']) $ \(digit,char) -> do
+               in nextAction `shouldBe` PromptDigit row col
+            cases (zip [D1 .. D9] ['1' .. '9']) $ \(digit, char) -> do
               it "valid digit -> should return to main menu" $
                 let nextAction = runTestConsoleApp [char] $ run $ PromptDigit row col
-                in nextAction `shouldBe` MainMenu
-
+                 in nextAction `shouldBe` MainMenu
 
 cases :: Show a => [a] -> (a -> SpecWith b) -> SpecWith b
 cases caseList specs = forM_ caseList runInContext
-  where runInContext x = context (show x) $ specs x
-
+  where
+    runInContext x = context (show x) $ specs x
