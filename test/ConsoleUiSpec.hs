@@ -82,6 +82,26 @@ spec = do
                 let nextAction = runTestConsoleApp [char] $ run $ PromptColumn row
                 in nextAction `shouldBe` PromptDigit row col
 
+      context "Prompt Digit" $ do
+        cases
+          [ (R1, C2),
+            (R9, C8)
+          ]
+          $ \(row, col) -> do
+            it "should prompt for digit" $
+              let consoleOutput = runTestConsoleApp ['3'] $ do
+                    run $ PromptDigit row col
+                    getConsoleLines
+              in consoleOutput `shouldBe` ["Digit?"]
+            it "invalid digit -> should retry" $
+              let nextAction = runTestConsoleApp ['x'] $ run $ PromptDigit row col
+              in nextAction `shouldBe` PromptDigit row col
+            cases (zip [D1 .. D9] ['1' .. '9']) $ \(digit,char) -> do
+              it "valid digit -> should return to main menu" $
+                let nextAction = runTestConsoleApp [char] $ run $ PromptDigit row col
+                in nextAction `shouldBe` MainMenu
+
+
 cases :: Show a => [a] -> (a -> SpecWith b) -> SpecWith b
 cases caseList specs = forM_ caseList runInContext
   where runInContext x = context (show x) $ specs x

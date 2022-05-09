@@ -41,7 +41,14 @@ run (PromptColumn row) = do
   let col = parseColumn char
   pure $ maybe (PromptColumn row) (PromptDigit row) col
 
-run (PromptDigit _ _) = pure MainMenu
+run (PromptDigit row col) = do
+  consoleWrite "Digit?"
+  char <- consoleReadChar
+  let digit = parseDigit char
+  pure $ maybe
+    (PromptDigit row col)
+    (const MainMenu)
+    digit
 
 parseRow :: Char -> Maybe Row
 parseRow char =  numToRow <$> (readMaybe [char] :: Maybe Int)
@@ -50,6 +57,11 @@ parseRow char =  numToRow <$> (readMaybe [char] :: Maybe Int)
 
 parseColumn :: Char -> Maybe Column
 parseColumn char =  numToCol <$> (readMaybe [char] :: Maybe Int)
+  where
+    numToCol i = toEnum (i - 1)
+
+parseDigit :: Char -> Maybe Digit
+parseDigit char =  numToCol <$> (readMaybe [char] :: Maybe Int)
   where
     numToCol i = toEnum (i - 1)
 
