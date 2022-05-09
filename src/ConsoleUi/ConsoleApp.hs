@@ -19,31 +19,34 @@ runSudokuMain = do
       if next == Quit then pure () else go next
 
 run :: MonadConsole m => Choice -> m Choice
-run Quit = pure Quit
-run MainMenu = do
-  consoleWrite $ renderGrid emptyGrid
-  consoleWrite menuOptions
-  parseMenuChoice <$> consoleReadChar
-run NewGrid = pure MainMenu
-run StartMove = do
-  consoleWrite "Row?"
-  char <- consoleReadChar
-  let row = parseNumeric char
-  pure $ maybe StartMove PromptColumn row
-run (PromptColumn row) = do
-  consoleWrite "Column?"
-  char <- consoleReadChar
-  let col = parseNumeric char
-  pure $ maybe (PromptColumn row) (PromptDigit row) col
-run (PromptDigit row col) = do
-  consoleWrite "Digit?"
-  char <- consoleReadChar
-  let digit = (parseNumeric char :: Maybe Digit)
-  pure $
-    maybe
-      (PromptDigit row col)
-      (const MainMenu)
-      digit
+run choice =
+  case choice of
+    Quit -> pure Quit
+    MainMenu -> do
+      consoleWrite $ renderGrid emptyGrid
+      consoleWrite menuOptions
+      parseMenuChoice <$> consoleReadChar
+    NewGrid ->
+      pure MainMenu
+    StartMove -> do
+      consoleWrite "Row?"
+      char <- consoleReadChar
+      let row = parseNumeric char
+      pure $ maybe StartMove PromptColumn row
+    (PromptColumn row) -> do
+      consoleWrite "Column?"
+      char <- consoleReadChar
+      let col = parseNumeric char
+      pure $ maybe (PromptColumn row) (PromptDigit row) col
+    (PromptDigit row col) -> do
+      consoleWrite "Digit?"
+      char <- consoleReadChar
+      let digit = (parseNumeric char :: Maybe Digit)
+      pure $
+        maybe
+          (PromptDigit row col)
+          (const MainMenu)
+          digit
 
 parseNumeric :: Enum a => Char -> Maybe a
 parseNumeric char = convert <$> (readMaybe [char] :: Maybe Int)
