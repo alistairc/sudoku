@@ -7,6 +7,7 @@ import Sudoku.Grid
 import Sudoku.Rendering
 import Test.Hspec
 
+
 spec :: Spec
 spec = do
   describe "on startup" $ do
@@ -54,32 +55,28 @@ spec = do
 
     context "Making a Move" $ do
       context "StartMove" $ do
+        let currentAction = StartMove
         it "should prompt for row" $
-          let consoleOutput = runTestConsoleApp ['3'] $ do
-                run StartMove
-                getConsoleLines
-           in consoleOutput `shouldBe` ["Row?"]
+            choicePrompt currentAction `shouldBe` ["Row?"]
         cases (zip [R1 .. R9] ['1' .. '9']) $ \(row, char) -> do
-          it "valid row" $
-            let nextAction = runTestConsoleApp [char] $ run StartMove
+          it "valid row -> should prompt for column" $
+            let nextAction = runTestConsoleApp [char] $ run currentAction
              in nextAction `shouldBe` PromptColumn row
         it "invalid row -> should retry" $
-          let nextAction = runTestConsoleApp ['x'] $ run StartMove
-           in nextAction `shouldBe` StartMove
+          let nextAction = runTestConsoleApp ['x'] $ run currentAction
+           in nextAction `shouldBe` currentAction
 
       context "PromptColumn" $ do
         cases [R1 .. R9] $ \row -> do
+          let currentAction = PromptColumn row
           it "should prompt for column" $
-            let consoleOutput = runTestConsoleApp ['3'] $ do
-                  run $ PromptColumn row
-                  getConsoleLines
-             in consoleOutput `shouldBe` ["Column?"]
+            choicePrompt currentAction `shouldBe` ["Column?"]
           it "invalid column -> should retry" $
-            let nextAction = runTestConsoleApp ['x'] $ run $ PromptColumn row
-             in nextAction `shouldBe` PromptColumn row
+            let nextAction = runTestConsoleApp ['x'] $ run currentAction
+             in nextAction `shouldBe` currentAction
           cases (zip [C1 .. C9] ['1' .. '9']) $ \(col, char) -> do
             it "valid column -> should prompt for digit" $
-              let nextAction = runTestConsoleApp [char] $ run $ PromptColumn row
+              let nextAction = runTestConsoleApp [char] $ run currentAction
                in nextAction `shouldBe` PromptDigit row col
 
       context "Prompt Digit" $ do
@@ -88,18 +85,21 @@ spec = do
             (R9, C8)
           ]
           $ \(row, col) -> do
+            let currentAction = PromptDigit row col
             it "should prompt for digit" $
-              let consoleOutput = runTestConsoleApp ['3'] $ do
-                    run $ PromptDigit row col
-                    getConsoleLines
-               in consoleOutput `shouldBe` ["Digit?"]
+              choicePrompt currentAction `shouldBe` ["Digit?"]
             it "invalid digit -> should retry" $
-              let nextAction = runTestConsoleApp ['x'] $ run $ PromptDigit row col
-               in nextAction `shouldBe` PromptDigit row col
+              let nextAction = runTestConsoleApp ['x'] $ run currentAction
+               in nextAction `shouldBe` currentAction
             cases (zip [D1 .. D9] ['1' .. '9']) $ \(digit, char) -> do
               it "valid digit -> should return to main menu" $
-                let nextAction = runTestConsoleApp [char] $ run $ PromptDigit row col
+                let nextAction = runTestConsoleApp [char] $ run currentAction
                  in nextAction `shouldBe` MainMenu
+
+choicePrompt :: Choice -> [String]
+choicePrompt action = runTestConsoleApp [] $ do
+  run action
+  getConsoleLines
 
 cases :: Show a => [a] -> (a -> SpecWith b) -> SpecWith b
 cases caseList specs = forM_ caseList runInContext
