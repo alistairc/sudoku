@@ -52,20 +52,28 @@ spec = do
           promptForChoice currentAction `shouldBe` ["Row?"]
         it "invalid row -> should retry" $
           invalidInputShouldRetry currentAction 'x'
-        cases (zip [R1 .. R9] ['1' .. '9']) $ \(row, char) -> do
-          it "valid row -> should prompt for column" $
-            nextActionShouldBe currentAction char $ PromptColumn row
+        cases
+          [ ('1', R1),
+            ('9', R9)
+          ]
+          $ \(char, row) -> do
+            it "valid row -> should prompt for column" $
+              nextActionShouldBe currentAction char $ PromptColumn row
 
       context "PromptColumn" $ do
-        cases [R1 .. R9] $ \row -> do
+        cases [R1, R9] $ \row -> do
           let currentAction = PromptColumn row
           it "should prompt for column" $
             promptForChoice currentAction `shouldBe` ["Column?"]
           it "invalid column -> should retry" $
             invalidInputShouldRetry currentAction 'x'
-          cases (zip [C1 .. C9] ['1' .. '9']) $ \(col, char) -> do
-            it "valid column -> should prompt for digit" $
-              nextActionShouldBe currentAction char $ PromptDigit row col
+          cases
+            [ ('1', C1),
+              ('9', C9)
+            ]
+            $ \(char, col) -> do
+              it "valid column -> should prompt for digit" $
+                nextActionShouldBe currentAction char $ PromptDigit row col
 
       context "Prompt Digit" $ do
         cases
@@ -78,9 +86,13 @@ spec = do
               promptForChoice currentAction `shouldBe` ["Digit?"]
             it "invalid digit -> should retry" $
               invalidInputShouldRetry currentAction 'x'
-            cases (zip [D1 .. D9] ['1' .. '9']) $ \(digit, char) -> do
-              it "valid digit -> should return to main menu" $
-                nextActionShouldBe currentAction char MainMenu
+            cases
+              [ ('1', D1),
+                ('9', D9)
+              ]
+              $ \(char, digit) -> do
+               it "valid digit -> should return to main menu" $
+                 nextActionShouldBe currentAction char MainMenu
 
 promptForChoice :: Choice -> [String]
 promptForChoice action = runTestConsoleApp [] $ do
