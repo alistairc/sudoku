@@ -7,7 +7,6 @@ import Sudoku.Grid
 import Sudoku.Rendering
 import Test.Hspec
 
-
 spec :: Spec
 spec = do
   describe "on startup" $ do
@@ -35,49 +34,38 @@ spec = do
                            menuOptions
                          ]
       it "q -> should quit" $
-        let keyPresses = ['q']
-            menuChoice = runTestConsoleApp keyPresses $ run MainMenu
-         in menuChoice `shouldBe` Quit
+        nextActionShouldBe MainMenu 'q' Quit
 
       it "n -> new grid" $
-        let keyPresses = ['n']
-            menuChoice = runTestConsoleApp keyPresses $ run MainMenu
-         in menuChoice `shouldBe` NewGrid
+        nextActionShouldBe MainMenu 'n' NewGrid
 
       it "m -> make a move" $ do
-        let menuChoice = runTestConsoleApp ['m'] $ run MainMenu
-        menuChoice `shouldBe` StartMove
+        nextActionShouldBe MainMenu 'm' StartMove
 
       it "any other key -> redisplay menu" $
-        let keyPresses = ['x']
-            menuChoice = runTestConsoleApp keyPresses $ run MainMenu
-         in menuChoice `shouldBe` MainMenu
+        nextActionShouldBe MainMenu 'x' MainMenu
 
     context "Making a Move" $ do
       context "StartMove" $ do
         let currentAction = StartMove
         it "should prompt for row" $
-            choicePrompt currentAction `shouldBe` ["Row?"]
+          promptForChoice currentAction `shouldBe` ["Row?"]
+        it "invalid row -> should retry" $
+          invalidInputShouldRetry currentAction 'x'
         cases (zip [R1 .. R9] ['1' .. '9']) $ \(row, char) -> do
           it "valid row -> should prompt for column" $
-            let nextAction = runTestConsoleApp [char] $ run currentAction
-             in nextAction `shouldBe` PromptColumn row
-        it "invalid row -> should retry" $
-          let nextAction = runTestConsoleApp ['x'] $ run currentAction
-           in nextAction `shouldBe` currentAction
+            nextActionShouldBe currentAction char $ PromptColumn row
 
       context "PromptColumn" $ do
         cases [R1 .. R9] $ \row -> do
           let currentAction = PromptColumn row
           it "should prompt for column" $
-            choicePrompt currentAction `shouldBe` ["Column?"]
+            promptForChoice currentAction `shouldBe` ["Column?"]
           it "invalid column -> should retry" $
-            let nextAction = runTestConsoleApp ['x'] $ run currentAction
-             in nextAction `shouldBe` currentAction
+            invalidInputShouldRetry currentAction 'x'
           cases (zip [C1 .. C9] ['1' .. '9']) $ \(col, char) -> do
             it "valid column -> should prompt for digit" $
-              let nextAction = runTestConsoleApp [char] $ run currentAction
-               in nextAction `shouldBe` PromptDigit row col
+              nextActionShouldBe currentAction char $ PromptDigit row col
 
       context "Prompt Digit" $ do
         cases
@@ -87,19 +75,27 @@ spec = do
           $ \(row, col) -> do
             let currentAction = PromptDigit row col
             it "should prompt for digit" $
-              choicePrompt currentAction `shouldBe` ["Digit?"]
+              promptForChoice currentAction `shouldBe` ["Digit?"]
             it "invalid digit -> should retry" $
-              let nextAction = runTestConsoleApp ['x'] $ run currentAction
-               in nextAction `shouldBe` currentAction
+              invalidInputShouldRetry currentAction 'x'
             cases (zip [D1 .. D9] ['1' .. '9']) $ \(digit, char) -> do
               it "valid digit -> should return to main menu" $
-                let nextAction = runTestConsoleApp [char] $ run currentAction
-                 in nextAction `shouldBe` MainMenu
+                nextActionShouldBe currentAction char MainMenu
 
-choicePrompt :: Choice -> [String]
-choicePrompt action = runTestConsoleApp [] $ do
+promptForChoice :: Choice -> [String]
+promptForChoice action = runTestConsoleApp [] $ do
   run action
   getConsoleLines
+
+invalidInputShouldRetry :: Choice -> Char -> Expectation
+invalidInputShouldRetry currentChoice invalidInput =
+  let nextAction = runTestConsoleApp [invalidInput] $ run currentChoice
+   in nextAction `shouldBe` currentChoice
+
+nextActionShouldBe :: Choice -> Char -> Choice -> Expectation
+nextActionShouldBe currentAction char expectedNext =
+  let nextAction = runTestConsoleApp [char] $ run currentAction
+   in nextAction `shouldBe` expectedNext
 
 cases :: Show a => [a] -> (a -> SpecWith b) -> SpecWith b
 cases caseList specs = forM_ caseList runInContext
