@@ -6,6 +6,7 @@ import Control.Monad (forM_)
 import Sudoku.Grid
 import Sudoku.Rendering
 import Test.Hspec
+import TestData (sampleGrid)
 
 spec :: Spec
 spec = do
@@ -25,12 +26,12 @@ spec = do
        in length consoleOutput `shouldSatisfy` (> 2)
 
     context "Main Menu" $ do
-      it "should display an empty grid, then a menu" $
+      it "should display a grid, then a menu" $
         let consoleOutput = runTestConsoleApp ['q'] $ do
-              run MainMenu
+              run MainMenu sampleGrid
               getConsoleLines
          in consoleOutput
-              `shouldBe` [ renderGrid emptyGrid,
+              `shouldBe` [ renderGrid sampleGrid,
                            menuOptions
                          ]
       it "q -> should quit" $
@@ -93,20 +94,28 @@ spec = do
               $ \(char, digit) -> do
                it "valid digit -> should return to main menu" $
                  nextActionShouldBe currentAction char MainMenu
+               it "should update the grid" $
+                let 
+                  initialGrid = emptyGrid
+                  (_, newGrid) = runTestConsoleApp [char] $ run currentAction initialGrid
+                in
+                  getCell (col,row) newGrid `shouldBe` Just digit
+
+
 
 promptForChoice :: Choice -> [String]
 promptForChoice action = runTestConsoleApp [] $ do
-  run action
+  run action emptyGrid
   getConsoleLines
 
 invalidInputShouldRetry :: Choice -> Char -> Expectation
 invalidInputShouldRetry currentChoice invalidInput =
-  let nextAction = runTestConsoleApp [invalidInput] $ run currentChoice
+  let (nextAction,_) = runTestConsoleApp [invalidInput] $ run currentChoice emptyGrid
    in nextAction `shouldBe` currentChoice
 
 nextActionShouldBe :: Choice -> Char -> Choice -> Expectation
 nextActionShouldBe currentAction char expectedNext =
-  let nextAction = runTestConsoleApp [char] $ run currentAction
+  let (nextAction,_) = runTestConsoleApp [char] $ run currentAction emptyGrid
    in nextAction `shouldBe` expectedNext
 
 cases :: Show a => [a] -> (a -> SpecWith b) -> SpecWith b

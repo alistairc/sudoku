@@ -12,41 +12,46 @@ data Choice = MainMenu | Quit | NewGrid | StartMove | PromptColumn Row | PromptD
 -- called by main itself but not directly in IO, so as to allow testing with an alternative monad
 runSudokuMain :: MonadConsole m => m ()
 runSudokuMain = do
-  go MainMenu
+  go MainMenu emptyGrid
   where
-    go choice = do
-      next <- run choice
-      if next == Quit then pure () else go next
+    go choice grid = do
+      (next, nextGrid) <- run choice grid
+      if next == Quit then pure () else go next nextGrid
 
-run :: MonadConsole m => Choice -> m Choice
-run choice =
+run :: MonadConsole m => Choice -> Grid -> m (Choice, Grid)
+run choice grid =
   case choice of
-    Quit -> pure Quit
+    Quit -> pure (Quit, grid)
     MainMenu -> do
-      consoleWrite $ renderGrid emptyGrid
+      consoleWrite $ renderGrid grid
       consoleWrite menuOptions
-      parseMenuChoice <$> consoleReadChar
+      char <- consoleReadChar
+      let next = parseMenuChoice char
+      pure (next, grid)
     NewGrid ->
-      pure MainMenu
+      pure (MainMenu, grid)
     StartMove -> do
       consoleWrite "Row?"
       char <- consoleReadChar
       let row = parseNumeric char
-      pure $ maybe StartMove PromptColumn row
+      let next = maybe StartMove PromptColumn row
+      pure (next, grid)
     (PromptColumn row) -> do
       consoleWrite "Column?"
       char <- consoleReadChar
       let col = parseNumeric char
-      pure $ maybe (PromptColumn row) (PromptDigit row) col
+      let next = maybe (PromptColumn row) (PromptDigit row) col
+      pure (next, grid)
     (PromptDigit row col) -> do
       consoleWrite "Digit?"
       char <- consoleReadChar
       let digit = (parseNumeric char :: Maybe Digit)
-      pure $
-        maybe
-          (PromptDigit row col)
-          (const MainMenu)
-          digit
+      let result =
+            maybe
+              (PromptDigit row col, grid)
+              (\d -> (MainMenu, grid & moveAt (col, row) d))
+              digit
+      pure result
 
 parseNumeric :: Enum a => Char -> Maybe a
 parseNumeric char = convert <$> (readMaybe [char] :: Maybe Int)
