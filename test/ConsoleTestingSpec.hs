@@ -3,6 +3,8 @@ module ConsoleTestingSpec where
 import ConsoleUi.ConsoleIO
 import ConsoleTesting
 import Test.Hspec
+import Sudoku.Grid (emptyGrid, Column (C1))
+import TestData (sampleGrid)
 
 spec :: Spec
 spec = do
@@ -26,3 +28,20 @@ spec = do
       let inputChars = []
           readChar = runTestConsoleApp inputChars consoleReadChar
        in readChar `shouldBe` ' '
+
+    context "grid state tracking" $ do
+      it "should be empty by default" $
+        let 
+          finalState = runTestConsoleApp [] sampleProgram
+          sampleProgram = do
+            getGrid
+        in
+          finalState `shouldBe` emptyGrid
+      it "should should allow updates" $
+        let 
+          finalState = runTestConsoleApp [] sampleProgram
+          sampleProgram = do
+            setGrid sampleGrid
+            getGrid
+        in
+          finalState `shouldBe` sampleGrid

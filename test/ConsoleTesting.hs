@@ -53,5 +53,5 @@ instance MonadConsole TestConsoleApp where
       split (h : t) = (h, t)
 
 instance MonadGrid TestConsoleApp where
-  getGrid = pure emptyGrid
-  setGrid _ = pure ()
+  getGrid = gets currentGrid
+  setGrid g = modify (\s -> s { currentGrid = g } )
