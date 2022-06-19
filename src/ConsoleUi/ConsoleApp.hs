@@ -16,7 +16,7 @@ data Choice = MainMenu | Quit | NewGrid | StartMove | PromptColumn Row | PromptD
   deriving (Eq, Show)
 
 -- called by main itself but not directly in IO, so as to allow testing with an alternative monad
-runSudokuMain :: MonadConsole m => m ()
+runSudokuMain :: (MonadConsole m, MonadGrid m) => m ()
 runSudokuMain = do
   go MainMenu emptyGrid
   where
@@ -24,7 +24,7 @@ runSudokuMain = do
       (next, nextGrid) <- run choice grid
       if next == Quit then pure () else go next nextGrid
 
-run :: MonadConsole m => Choice -> Grid -> m (Choice, Grid)
+run :: (MonadConsole m, MonadGrid m) => Choice -> Grid -> m (Choice, Grid)
 run choice grid =
   case choice of
     Quit -> pure (Quit, grid)
@@ -34,7 +34,7 @@ run choice grid =
     PromptColumn row -> chooseColumn grid row
     PromptDigit row col -> chooseDigit grid row col
 
-doMainMenu :: MonadConsole m => Grid -> m (Choice, Grid)
+doMainMenu :: (MonadConsole m, MonadGrid m) => Grid -> m (Choice, Grid)
 doMainMenu grid = do
   consoleWrite $ renderGrid grid
   consoleWrite menuOptions
@@ -42,7 +42,7 @@ doMainMenu grid = do
   let next = parseMenuChoice char
   pure (next, grid)
 
-startMove :: MonadConsole m => Grid -> m (Choice, Grid)
+startMove :: (MonadConsole m, MonadGrid m) => Grid -> m (Choice, Grid)
 startMove grid = do
   consoleWrite "Row?"
   char <- consoleReadChar
@@ -50,7 +50,7 @@ startMove grid = do
   let next = maybe StartMove PromptColumn row
   pure (next, grid)
 
-chooseColumn :: MonadConsole m => Grid -> Row -> m (Choice, Grid)
+chooseColumn :: (MonadConsole m, MonadGrid m) => Grid -> Row -> m (Choice, Grid)
 chooseColumn grid row = do
   consoleWrite "Column?"
   char <- consoleReadChar
@@ -58,7 +58,7 @@ chooseColumn grid row = do
   let next = maybe (PromptColumn row) (PromptDigit row) col
   pure (next, grid)
 
-chooseDigit :: MonadConsole m => Grid -> Row -> Column -> m (Choice, Grid)
+chooseDigit :: (MonadConsole m, MonadGrid m) => Grid -> Row -> Column -> m (Choice, Grid)
 chooseDigit grid row col = do
   consoleWrite "Digit?"
   char <- consoleReadChar
