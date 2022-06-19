@@ -90,6 +90,7 @@ executables:
     dependencies:
     - sudoku
     - haskeline
+    - mtl
 
 tests:
   sudoku-test:

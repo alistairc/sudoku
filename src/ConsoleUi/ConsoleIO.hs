@@ -3,10 +3,11 @@ module ConsoleUi.ConsoleIO where
 import System.Console.Haskeline
 import Data.Maybe
 import Sudoku.Grid (Grid, emptyGrid)
+import Control.Monad.State
 
 
 --type alias for our monand transformer stack
-type AppM = InputT IO
+type AppM = InputT (StateT Grid IO)
 
 -- typeclass as interface to abstract console IO
 class Monad m => MonadConsole m where
@@ -28,3 +29,5 @@ instance MonadGrid AppM where
   getGrid = pure emptyGrid
   setGrid _ = pure ()
   
+updateGrid :: MonadGrid m => (Grid -> Grid) -> m ()
+updateGrid f = getGrid >>= setGrid . f 
