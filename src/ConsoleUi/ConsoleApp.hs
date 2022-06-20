@@ -7,6 +7,7 @@ module ConsoleUi.ConsoleApp
 where
 
 import ConsoleUi.ConsoleIO
+import ConsoleUi.GridState
 import Data.Function ((&))
 import Sudoku.Grid
 import Sudoku.Rendering

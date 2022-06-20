@@ -8,6 +8,7 @@ import Sudoku.Rendering
 import Test.Hspec
 import TestData (sampleGrid)
 import ConsoleUi.ConsoleIO
+import ConsoleUi.GridState
 
 spec :: Spec
 spec = do

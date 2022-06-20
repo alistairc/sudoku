@@ -1,6 +1,7 @@
 module ConsoleTesting where
 
 import ConsoleUi.ConsoleIO
+import ConsoleUi.GridState
 import Control.Monad.State
 import Sudoku.Grid (emptyGrid, Grid)
 

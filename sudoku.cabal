@@ -27,6 +27,7 @@ library
   exposed-modules:
       ConsoleUi.ConsoleApp
       ConsoleUi.ConsoleIO
+      ConsoleUi.GridState
       Sudoku.Grid
       Sudoku.Rendering
   other-modules:

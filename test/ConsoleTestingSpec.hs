@@ -1,6 +1,7 @@
 module ConsoleTestingSpec where
 
 import ConsoleUi.ConsoleIO
+import ConsoleUi.GridState
 import ConsoleTesting
 import Test.Hspec
 import Sudoku.Grid (emptyGrid, Column (C1))
