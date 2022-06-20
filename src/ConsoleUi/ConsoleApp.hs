@@ -29,7 +29,7 @@ run choice grid =
   case choice of
     Quit -> pure (Quit, grid)
     MainMenu -> doMainMenu grid
-    NewGrid -> pure (MainMenu, grid)
+    NewGrid -> pure (MainMenu, emptyGrid)
     StartMove -> startMove grid
     PromptColumn row -> chooseColumn grid row
     PromptDigit row col -> chooseDigit grid row col

@@ -46,6 +46,13 @@ spec = do
       it "any other key -> redisplay menu" $
         nextActionShouldBe MainMenu 'x' MainMenu
 
+    context "New Grid" $
+      it "n -> new grid" $ do
+          let grid = runTestConsoleApp [] $ do
+                pair <- run NewGrid sampleGrid 
+                pure $ snd pair
+          grid `shouldBe` emptyGrid
+
     context "Making a Move" $ do
       context "StartMove" $ do
         let currentAction = StartMove
