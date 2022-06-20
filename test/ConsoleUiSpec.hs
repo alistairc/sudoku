@@ -7,6 +7,7 @@ import Sudoku.Grid
 import Sudoku.Rendering
 import Test.Hspec
 import TestData (sampleGrid)
+import ConsoleUi.ConsoleIO
 
 spec :: Spec
 spec = do
@@ -28,7 +29,8 @@ spec = do
     context "Main Menu" $ do
       it "should display a grid, then a menu" $
         let consoleOutput = runTestConsoleApp ['q'] $ do
-              run MainMenu sampleGrid
+              setGrid sampleGrid
+              run MainMenu
               getConsoleLines
          in consoleOutput
               `shouldBe` [ renderGrid sampleGrid,
@@ -37,7 +39,7 @@ spec = do
       it "q -> should quit" $
         nextActionShouldBe MainMenu 'q' Quit
 
-      it "n -> new grid" $
+      it "n -> new grid" $ do
         nextActionShouldBe MainMenu 'n' NewGrid
 
       it "m -> make a move" $ do
@@ -49,8 +51,9 @@ spec = do
     context "New Grid" $
       it "n -> new grid" $ do
           let grid = runTestConsoleApp [] $ do
-                pair <- run NewGrid sampleGrid 
-                pure $ snd pair
+                setGrid sampleGrid
+                run NewGrid
+                getGrid
           grid `shouldBe` emptyGrid
 
     context "Making a Move" $ do
@@ -103,8 +106,9 @@ spec = do
                  nextActionShouldBe currentAction char MainMenu
                it "should update the grid" $
                 let 
-                  initialGrid = emptyGrid
-                  (_, newGrid) = runTestConsoleApp [char] $ run currentAction initialGrid
+                  newGrid = runTestConsoleApp [char] $ do
+                     run currentAction
+                     getGrid
                 in
                   getCell (col,row) newGrid `shouldBe` Just digit
 
@@ -112,17 +116,17 @@ spec = do
 
 promptForChoice :: Choice -> [String]
 promptForChoice action = runTestConsoleApp [] $ do
-  run action emptyGrid
+  run action
   getConsoleLines
 
 invalidInputShouldRetry :: Choice -> Char -> Expectation
 invalidInputShouldRetry currentChoice invalidInput =
-  let (nextAction,_) = runTestConsoleApp [invalidInput] $ run currentChoice emptyGrid
+  let nextAction = runTestConsoleApp [invalidInput] $ run currentChoice 
    in nextAction `shouldBe` currentChoice
 
 nextActionShouldBe :: Choice -> Char -> Choice -> Expectation
 nextActionShouldBe currentAction char expectedNext =
-  let (nextAction,_) = runTestConsoleApp [char] $ run currentAction emptyGrid
+  let nextAction = runTestConsoleApp [char] $ run currentAction 
    in nextAction `shouldBe` expectedNext
 
 cases :: Show a => [a] -> (a -> SpecWith b) -> SpecWith b

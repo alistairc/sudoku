@@ -18,57 +18,64 @@ data Choice = MainMenu | Quit | NewGrid | StartMove | PromptColumn Row | PromptD
 -- called by main itself but not directly in IO, so as to allow testing with an alternative monad
 runSudokuMain :: (MonadConsole m, MonadGrid m) => m ()
 runSudokuMain = do
-  go MainMenu emptyGrid
+  setGrid emptyGrid
+  go MainMenu
   where
-    go choice grid = do
-      (next, nextGrid) <- run choice grid
-      if next == Quit then pure () else go next nextGrid
+    go choice = do
+      next <- run choice
+      if next == Quit then pure () else go next
 
-run :: (MonadConsole m, MonadGrid m) => Choice -> Grid -> m (Choice, Grid)
-run choice grid =
+run :: (MonadConsole m, MonadGrid m) => Choice -> m Choice
+run choice =
   case choice of
-    Quit -> pure (Quit, grid)
-    MainMenu -> doMainMenu grid
-    NewGrid -> pure (MainMenu, emptyGrid)
-    StartMove -> startMove grid
-    PromptColumn row -> chooseColumn grid row
-    PromptDigit row col -> chooseDigit grid row col
+    Quit -> pure Quit
+    MainMenu -> mainMenu
+    NewGrid -> newGrid
+    StartMove -> startMove
+    PromptColumn row -> chooseColumn row
+    PromptDigit row col -> chooseDigit row col
 
-doMainMenu :: (MonadConsole m, MonadGrid m) => Grid -> m (Choice, Grid)
-doMainMenu grid = do
-  consoleWrite $ renderGrid grid
+mainMenu :: (MonadConsole m, MonadGrid m) => m Choice
+mainMenu = do
+  getGrid >>= consoleWrite . renderGrid
   consoleWrite menuOptions
   char <- consoleReadChar
   let next = parseMenuChoice char
-  pure (next, grid)
+  pure next
 
-startMove :: (MonadConsole m, MonadGrid m) => Grid -> m (Choice, Grid)
-startMove grid = do
+newGrid :: (MonadConsole m, MonadGrid m) => m Choice
+newGrid = do 
+  setGrid emptyGrid
+  pure MainMenu
+
+startMove :: (MonadConsole m, MonadGrid m) => m Choice
+startMove = do
   consoleWrite "Row?"
   char <- consoleReadChar
   let row = parseNumeric char
   let next = maybe StartMove PromptColumn row
-  pure (next, grid)
+  pure next
 
-chooseColumn :: (MonadConsole m, MonadGrid m) => Grid -> Row -> m (Choice, Grid)
-chooseColumn grid row = do
+chooseColumn :: (MonadConsole m, MonadGrid m) => Row -> m Choice
+chooseColumn row = do
   consoleWrite "Column?"
   char <- consoleReadChar
   let col = parseNumeric char
   let next = maybe (PromptColumn row) (PromptDigit row) col
-  pure (next, grid)
+  pure next
 
-chooseDigit :: (MonadConsole m, MonadGrid m) => Grid -> Row -> Column -> m (Choice, Grid)
-chooseDigit grid row col = do
+chooseDigit :: (MonadConsole m, MonadGrid m) => Row -> Column -> m Choice
+chooseDigit row col = do
   consoleWrite "Digit?"
   char <- consoleReadChar
-  let digit = parseNumeric char :: Maybe Digit
-  let result =
-        maybe
-          (PromptDigit row col, grid)
-          (\d -> (MainMenu, grid & moveAt (col, row) d))
-          digit
-  pure result
+  let digit = parseNumeric char
+  maybe 
+    (pure $ PromptDigit row col)
+    (\d -> do 
+      updateGrid $ moveAt (col, row) d
+      pure MainMenu
+    )
+    digit
 
 promptNumeric :: (MonadConsole m, Enum b) => String -> m (Maybe b)
 promptNumeric prompt = do

@@ -26,8 +26,8 @@ class Monad m => MonadGrid m where
   setGrid :: Grid -> m ()
 
 instance MonadGrid AppM where
-  getGrid = pure emptyGrid
-  setGrid _ = pure ()
-  
+  getGrid = lift get
+  setGrid = lift . put
+
 updateGrid :: MonadGrid m => (Grid -> Grid) -> m ()
-updateGrid f = getGrid >>= setGrid . f 
+updateGrid f = getGrid >>= setGrid . f
